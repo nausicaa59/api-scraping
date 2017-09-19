@@ -5,6 +5,7 @@ from flask import render_template
 from flask import g
 import models.model as model
 import models.auteur as m_auteur
+import models.sujet as m_sujet
 from validators.sujets import ControleSujet
 
 app = Flask(__name__)
@@ -13,7 +14,6 @@ app = Flask(__name__)
 @app.route("/")
 def hello():
 	db = g.db
-	print(m_auteur.default())
 	response = app.response_class(
 		response=json.dumps([]),
 		status=200,
@@ -28,17 +28,26 @@ def postHello():
 	reponse = {
 		"nbErreur":0,
 		"nbValide":0,
-		"fatalError":False
+		"nbAjouter":0,
+		"nbNonAjouter":0,
+		"fatalError":False,
+		"notificationOk":[],
+		"notificationError":[]
 	}
 
 	try:
-		data = request.json
+		db = g.db
+		data = request.json		
 		validation = ControleSujet().cleanList(data["sujets"])
+		insertions = m_sujet.addMultiple(db, validation["valides"])
 		reponse["nbErreur"] = len(validation["erreurs"])
-		reponse["nbValide"] = len(validation["valides"])
-		print(validation)
+		reponse["nbValide"] = len(validation["valides"])		
+		reponse["nbNonAjouter"] 		= insertions["nbNonAjouter"]
+		reponse["nbAjouter"] 			= insertions["nbAjouter"]
+		reponse["notificationOk"] 		= insertions["notificationOk"]
+		reponse["notificationError"] 	= insertions["notificationError"]
 	except Exception as e:
-		print(e)
+		print("hello>posthello : ",e)
 		reponse["fatalError"] = True
 
 

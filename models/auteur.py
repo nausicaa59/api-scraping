@@ -10,12 +10,12 @@ def default():
 	return {
 		"created_at" : datetime.datetime.now(),
 		"updated_at" : datetime.datetime.now(),
-		"pseudo" : "nausicaa",
+		"pseudo" : "",
 		"cheked_profil" : 0,
 		"pays" : "France",
-		"nb_messages" : 120,
-		"img_lien" : "http://image.jeuxvideo.com/avatar-sm/s/a/sado-masogyne-1501334090-2b65db61ba647f1efffaa18e374f71ed.jpg",
-		"nb_relation" : 10,
+		"nb_messages" : 0,
+		"img_lien" : "http://image.jeuxvideo.com/avatar-sm/default.jpg",
+		"nb_relation" : 0,
 		"banni" : 0,
 		"date_inscription" : datetime.datetime.now(),
 		"coord_X" : 0,
@@ -32,25 +32,30 @@ def get(db, id):
 def gets(db, nb = 10):
 	with db_session:
 		tab = select(p for p in db.Auteur)[:nb]
-		listA = [x.to_dict_prepara() for x in tab]
 		return listA
 
 
-def existe(db, pseudo):
-	with db_session:
-		auteurs = select(a for a in db.Auteur if a.pseudo == pseudo)[:]
-		
-		if len(auteurs) != 0:
-			return True
-		
+def getByPseudo(db, pseudo):
+	try:
+		with db_session:
+			auteur = db.Auteur.get(pseudo = pseudo)
+			return auteur
+	except Exception as e:
+		print("auteur>getByPseudo", e)
+		return None
+
+
+
+def addOnlyPseudo(db, pseudo):
+	if getByPseudo(db, pseudo) != None:
 		return False
 
+	val = default()
+	val["pseudo"] = pseudo
 
-def add(db, val):
-	if existe(db, "nausicaa56"):
+	try:
+		with db_session:
+			return db.Auteur(**val)
+	except Exception as e:
+		print("addOnlyPseudo", e)
 		return False
-
-	with db_session:
-		auteur = db.Auteur(**val)
-	
-	return auteur
