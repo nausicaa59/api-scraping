@@ -45,6 +45,38 @@ def getByPseudo(db, pseudo):
 		return None
 
 
+def getUntreated(db):
+	try:
+		with db_session:
+			auteur = db.Auteur.select_by_sql('SELECT * FROM auteurs a WHERE a.cheked_profil = 0 ORDER BY RAND() LIMIT 0,1')
+			return auteur
+	except Exception as e:
+		print("auteur>getUntreated", e)
+		return None
+
+
+def multipleLikeFirst(letters):
+	isFirst = True
+	conditions = "a.cheked_profil = 0 AND ("
+	for x in letters:
+		conditions += "" if isFirst else " OR "
+		conditions += "pseudo LIKE '" + x + "%'"
+		isFirst = False
+	conditions += ")"
+	return conditions	
+
+
+def getUntreatedByLetters(db, letters):
+	try:
+		with db_session:
+			conditions = multipleLikeFirst(letters)
+			print(conditions)
+			auteurs = db.Auteur.select_by_sql('SELECT * FROM auteurs a WHERE ' + conditions)
+			return auteurs
+	except Exception as e:
+		print("auteur>getUntreated", e)
+		return None
+
 
 def addOnlyPseudo(db, pseudo):
 	if getByPseudo(db, pseudo) != None:
@@ -59,3 +91,20 @@ def addOnlyPseudo(db, pseudo):
 	except Exception as e:
 		print("addOnlyPseudo", e)
 		return False
+
+
+def update(db, info):
+	try:
+		with db_session:
+			auteur = getByPseudo(db, info["pseudo"])
+			if auteur != None :
+				auteur.img_lien = info["img_lien"]
+				auteur.date_inscription = info["date_inscription"]
+				auteur.nb_messages = info["nb_messages"]
+				auteur.nb_relation = info["nb_relation"]
+				auteur.banni = info["banni"]
+				auteur.cheked_profil = 1
+				auteur.updated_at = datetime.datetime.now()
+				commit()
+	except Exception as e:
+		print("update", e)
