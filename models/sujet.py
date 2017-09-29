@@ -1,7 +1,6 @@
 import pymysql
 import models.auteur as m_auteur
 from pony.orm import *
-from flask import g
 import datetime
 
 

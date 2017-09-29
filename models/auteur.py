@@ -3,7 +3,7 @@ import datetime
 import json
 import time
 from pony.orm import *
-from flask import g
+
 
 
 def default():
