@@ -1,0 +1,12 @@
+{
+	"bdd" : {
+		"provider": "mysql", 
+		"host":"XXXXXXXX", 
+		"user":"XXXXX",
+		"passwd":"XXXXXX", 
+		"db":"XXXXXX"
+	},
+	"model" : {
+		"path" : "../pathofmodel/"
+	}
+}

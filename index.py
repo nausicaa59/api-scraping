@@ -1,11 +1,12 @@
+import config.config as config
 from flask import Flask
 from flask import json
 from flask import request
 from flask import render_template
 from flask import g
-import models.model as model
-import models.auteur as m_auteur
-import models.sujet as m_sujet
+import model
+import auteur as m_auteur
+import sujet as m_sujet
 from validators.sujets import ControleSujet
 from validators.auteur import ControleAuteur
 
@@ -118,42 +119,3 @@ def close_connection(exception):
 	db = getattr(g, 'db', None)
 	if db is not None:
 		db.disconnect()
-
-
-
-
-"""
-	db = g.db
-	data = model.getArticles(db, 2)
-	response = app.response_class(
-		response=json.dumps(data),
-		status=200,
-		mimetype='application/json'
-	)
-
-
-	t = time.time()
-	#init couch
-	couch = couchdb.Server('http://127.0.0.1:5984/')
-	dbCouch = couch['test']
-
-	try:
-		cache = dbCouch[__name__]
-	except Exception as e:
-		cache = None
-
-
-	if cache is None:
-		db = model.prepareDb()
-		a = model.getArticles(db, 60)
-		doc = {'_id': __name__, 'val': a}
-		dbCouch.save(doc)
-	else:
-		a = cache['val']
-
-	
-	g.test = 5
-	
-	print(time.time() - t)
-	return render_template('accueil.html', articles=a)
-"""
